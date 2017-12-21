@@ -147,7 +147,9 @@ public class CnxActivity extends AppCompatActivity implements View.OnClickListen
 
     /**
      *  Registers a listener for the facebook login button
-     private void  registerCallBack(){
+     *  - onSuccess : Sets Current profile
+     */
+    private void  registerCallBack(){
 
         LoginBtn.registerCallback(fbCallBack, new FacebookCallback<LoginResult>(){
             @Override
