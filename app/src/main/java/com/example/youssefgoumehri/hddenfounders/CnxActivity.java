@@ -99,11 +99,24 @@ public class CnxActivity extends AppCompatActivity implements View.OnClickListen
         };
 
 
-        accessTokenTracker.startTracking();
+        //accessTokenTracker.startTracking();
         //register the callback listener of the logging
         registerCallBack();
 
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        fbCallBack.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
 
     /**
      * On Activity resume
@@ -235,10 +248,12 @@ public class CnxActivity extends AppCompatActivity implements View.OnClickListen
     @Override
     public void onClick(View view) {
 
-        if(AccessToken.getCurrentAccessToken() == null || !isInternetAvailable()) return;
+        if(AccessToken.getCurrentAccessToken() == null) return;
+        System.out.println("passed");
         intent = new Intent(getApplicationContext(), AlbumsActivity.class);
 
         getApplicationContext().startActivity(intent);
+
 
     }
 }

@@ -49,10 +49,7 @@ public class AlbumsActivity extends AppCompatActivity {
 
         builder = new android.app.AlertDialog.Builder(this);
         builder.setMessage("Fetching for albums...").setCancelable(true);
-        dialog = builder.create();
-        try {
-            dialog.show();
-        }catch(Exception e){}
+
 
 
         //preparing the request to retrieve albums
@@ -68,16 +65,13 @@ public class AlbumsActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        //if a session exists
+        //if no session exists
         if(AccessToken.getCurrentAccessToken() != null && isInternetAvailable()){
 
             listAlbum.setAdapter(null);
             listAlbum.deferNotifyDataSetChanged();
             //sending request to for albums
             prepareRequest();
-        }else{
-            onBackPressed();
-            finish();
         }
     }
 
@@ -167,6 +161,10 @@ public class AlbumsActivity extends AppCompatActivity {
     private void prepareRequest(){
 
 
+        dialog = builder.create();
+        try {
+            dialog.show();
+        }catch(Exception e){}
         //Retrieving the current connection access Token
         AccessToken at = AccessToken.getCurrentAccessToken();
 
@@ -189,7 +187,6 @@ public class AlbumsActivity extends AppCompatActivity {
                     //managing response
                     RegisterAlbums(response);
 
-                    finish();
                 } catch (JSONException  e) {
                     Log.v("info","ERRRRRRROR");
                 }

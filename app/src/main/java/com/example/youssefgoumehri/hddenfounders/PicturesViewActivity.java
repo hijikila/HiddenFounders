@@ -88,11 +88,9 @@ public class PicturesViewActivity extends AppCompatActivity {
 
             photoList.setAdapter(null);
             photoList.deferNotifyDataSetChanged();
-            //sending request to for albums
+
+
             reterievePhotos();
-        }else{
-            onBackPressed();
-            finish();
         }
     }
 
@@ -132,7 +130,7 @@ public class PicturesViewActivity extends AppCompatActivity {
             case R.id.UploadToFireBase:
                 if(pictureAdapter != null)
                     pictureAdapter.uploadAll();
-
+                    pictureAdapter.notifyDataSetChanged();
                 return true;
 
 
@@ -170,7 +168,6 @@ public class PicturesViewActivity extends AppCompatActivity {
 
                 try {
                     RegisterPhotos(response);
-                    finish();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -211,7 +208,6 @@ public class PicturesViewActivity extends AppCompatActivity {
         currAlbum.setPicturesUrl(picturesUrl);
         pictureAdapter = new PictureAdapter(this.getApplicationContext(), currAlbum, PicturesViewActivity.this);
         photoList.setAdapter(pictureAdapter);
-        photoList.deferNotifyDataSetChanged();
 
         dialog.dismiss();
     }

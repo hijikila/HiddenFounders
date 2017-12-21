@@ -153,6 +153,7 @@ public class PictureAdapter extends BaseAdapter {
             fbum.uploadToServer(photoList.get(Integer.parseInt(index)).getMbitMap());
             photoList.get(Integer.parseInt(index)).toggleCkecked();
         }
+
     }
 
 

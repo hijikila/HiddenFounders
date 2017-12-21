@@ -27,7 +27,7 @@ public class FirebaseUploadManager {
      */
     private PicturesViewActivity _this;         //The request source
     private FirebaseStorage storage;            // Variables
-    private StorageReference storageReference; // for uloading
+    private StorageReference storageReference; // for ulpoading
 
 
 
