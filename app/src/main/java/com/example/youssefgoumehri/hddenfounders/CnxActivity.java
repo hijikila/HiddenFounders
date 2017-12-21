@@ -43,6 +43,7 @@ public class CnxActivity extends AppCompatActivity implements View.OnClickListen
     private Intent intent;                              //Intent for activity changing
     private ImageView ppv;                              //The profile picture ImageView
     private TextView userNameTv;                        //TextView showing the name of the current user
+    private boolean activityResumed;
 
 
 
@@ -68,6 +69,7 @@ public class CnxActivity extends AppCompatActivity implements View.OnClickListen
         //Instantiating
         albumsList = new ArrayList<>();
 
+        activityResumed = false;
 
         //Setting the login button
         LoginBtn = findViewById(R.id.login_button);
@@ -129,11 +131,15 @@ public class CnxActivity extends AppCompatActivity implements View.OnClickListen
 
         //if a session exists
         if(AccessToken.getCurrentAccessToken() != null) {
-
-            //sending request to for albums
-            setProfile();
-            setProfilePicture(currProfile.getProfilePictureUri(350, 440));
+            //if(activityResumed) {
+            if(isInternetAvailable()) {
+                //sending request to for albums
+                setProfile();
+                setProfilePicture(currProfile.getProfilePictureUri(350, 440));
+            }
+            //}else activityResumed = true;
         }
+
     }
 
 
@@ -141,9 +147,7 @@ public class CnxActivity extends AppCompatActivity implements View.OnClickListen
 
     /**
      *  Registers a listener for the facebook login button
-     *  - onSuccess : Sets Current profile
-     */
-    private void  registerCallBack(){
+     private void  registerCallBack(){
 
         LoginBtn.registerCallback(fbCallBack, new FacebookCallback<LoginResult>(){
             @Override
@@ -235,15 +239,31 @@ public class CnxActivity extends AppCompatActivity implements View.OnClickListen
     @Override
     public void onClick(View view) {
 
-        if(AccessToken.getCurrentAccessToken() == null ) {
-            return;
+         if(AccessToken.getCurrentAccessToken() != null && isInternetAvailable()) {
+             System.out.println("in22222");
+            intent = new Intent(getApplicationContext(), AlbumsActivity.class);
+
+            getApplicationContext().startActivity(intent);
         }
-        System.out.println("passed");
-        intent = new Intent(getApplicationContext(), AlbumsActivity.class);
-
-        getApplicationContext().startActivity(intent);
-
 
     }
 
+
+
+
+    /**
+     * Checks if the device is connected to internet
+     * @return boolean
+     */
+    public boolean isInternetAvailable() {
+        try {
+            InetAddress ipAddr = InetAddress.getByName("8.8.8.8");
+            return !ipAddr.equals("");
+
+        } catch (Exception e) {
+            System.out.println("exception test internet");
+            return false;
+        }
+
+    }
 }

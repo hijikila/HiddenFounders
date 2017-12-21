@@ -61,13 +61,7 @@ public class PicturesViewActivity extends AppCompatActivity {
         Intent srcIntent = getIntent();
         currAlbum =  srcIntent.getExtras().getParcelable("album");
 
-        //Setting up and launching the alert dialog
-        builder = new AlertDialog.Builder(this);
-        builder.setMessage("Fetching for photos...").setCancelable(true);
-        dialog = builder.create();
-        try {
-            dialog.show();
-        }catch(Exception e){}
+
         //Retrieving the photos in the current album
         reterievePhotos();
 
@@ -75,11 +69,6 @@ public class PicturesViewActivity extends AppCompatActivity {
 
 
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        activityResumed = true;
-    }
 
 
     /**
@@ -90,14 +79,16 @@ public class PicturesViewActivity extends AppCompatActivity {
         super.onResume();
 
         //if a session exists
-        if(AccessToken.getCurrentAccessToken() != null && activityResumed && isInternetAvailable()){
+        if(AccessToken.getCurrentAccessToken() != null){
 
 
             photoList.setAdapter(null);
             photoList.deferNotifyDataSetChanged();
 
-
+        if(activityResumed && isInternetAvailable())
             reterievePhotos();
+        }else{
+            activityResumed = true;
         }
     }
 
@@ -227,6 +218,7 @@ public class PicturesViewActivity extends AppCompatActivity {
         photoList.setAdapter(pictureAdapter);
 
         dialog.dismiss();
+
     }
 
 
@@ -236,7 +228,7 @@ public class PicturesViewActivity extends AppCompatActivity {
      */
     public boolean isInternetAvailable() {
         try {
-            InetAddress ipAddr = InetAddress.getByName("google.com");
+            InetAddress ipAddr = InetAddress.getByName("8.8.8.8");
             return !ipAddr.equals("");
 
         } catch (Exception e) {

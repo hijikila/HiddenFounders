@@ -70,6 +70,8 @@ public class PictureAdapter extends BaseAdapter {
 
 
 
+
+
     /**
      * Serves as holder to a single photo view elements
      */
@@ -130,7 +132,6 @@ public class PictureAdapter extends BaseAdapter {
      * @param i
      */
     private void toggleCheck(int i){
-        System.out.println("last isckd : "+photoList.get(i).isChecked());
         if(photoList.get(i).isChecked())indexToUpload.remove(i+"");
         else indexToUpload.add(i+"");
         photoList.get(i).toggleCkecked();

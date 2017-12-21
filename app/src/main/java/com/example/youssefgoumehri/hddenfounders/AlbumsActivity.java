@@ -58,11 +58,6 @@ public class AlbumsActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        activityResumed = true;
-    }
 
 
     /**
@@ -80,8 +75,8 @@ public class AlbumsActivity extends AppCompatActivity {
             //sending request to for albums
             if(activityResumed && isInternetAvailable()) {
                 prepareRequest();
-                activityResumed = false;
-            }
+
+            }else activityResumed = true;
         }
     }
 
@@ -220,7 +215,7 @@ public class AlbumsActivity extends AppCompatActivity {
      */
     public boolean isInternetAvailable() {
         try {
-            InetAddress ipAddr = InetAddress.getByName("google.com");
+            InetAddress ipAddr = InetAddress.getByName("8.8.8.8");
             return !ipAddr.equals("");
 
         } catch (Exception e) {
