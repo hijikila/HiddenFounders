@@ -48,8 +48,6 @@ public class AlbumsActivity extends AppCompatActivity {
         albumsList = new ArrayList<>();
 
 
-        builder = new android.app.AlertDialog.Builder(this);
-        builder.setMessage("Fetching for albums...").setCancelable(true);
 
         activityResumed = false;
 
@@ -172,6 +170,9 @@ public class AlbumsActivity extends AppCompatActivity {
      */
     private void prepareRequest(){
 
+
+        builder = new android.app.AlertDialog.Builder(this);
+        builder.setMessage("Fetching for albums...").setCancelable(true);
 
         dialog = builder.create();
         try {

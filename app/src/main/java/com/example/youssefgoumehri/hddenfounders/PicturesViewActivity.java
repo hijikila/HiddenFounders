@@ -92,13 +92,7 @@ public class PicturesViewActivity extends AppCompatActivity {
         //if a session exists
         if(AccessToken.getCurrentAccessToken() != null && activityResumed && isInternetAvailable()){
 
-            //Setting up and launching the alert dialog
-            builder = new AlertDialog.Builder(this);
-            builder.setMessage("Fetching for photos...").setCancelable(true);
-            dialog = builder.create();
-            try {
-                dialog.show();
-            }catch(Exception e){}
+
             photoList.setAdapter(null);
             photoList.deferNotifyDataSetChanged();
 
@@ -168,6 +162,16 @@ public class PicturesViewActivity extends AppCompatActivity {
         Bundle params = new Bundle();
         params.putString("fields", "id, source");
         params.putString("url", "{image-url}");
+
+
+        //Setting up and launching the alert dialog
+        builder = new AlertDialog.Builder(this);
+        builder.setMessage("Fetching for photos...").setCancelable(true);
+        dialog = builder.create();
+        try {
+            dialog.show();
+        }catch(Exception e){}
+
 
         GraphRequest request = new GraphRequest(
                 AccessToken.getCurrentAccessToken(),
