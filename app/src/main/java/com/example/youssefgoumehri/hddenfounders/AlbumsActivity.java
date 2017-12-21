@@ -31,6 +31,7 @@ public class AlbumsActivity extends AppCompatActivity {
     private BitmapFromURL bitmapFromURL;                //gets a Bitmap of an URL String
     private android.app.AlertDialog dialog;             //an AlertDialog to show while long operations
     private android.app.AlertDialog.Builder builder;    //AlertDialog builder
+    private boolean activityResumed;
 
 
     @Override
@@ -50,11 +51,19 @@ public class AlbumsActivity extends AppCompatActivity {
         builder = new android.app.AlertDialog.Builder(this);
         builder.setMessage("Fetching for albums...").setCancelable(true);
 
+        activityResumed = false;
 
 
         //preparing the request to retrieve albums
-        prepareRequest();
+            prepareRequest();
 
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        activityResumed = true;
     }
 
 
@@ -65,13 +74,16 @@ public class AlbumsActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        //if no session exists
-        if(AccessToken.getCurrentAccessToken() != null && isInternetAvailable()){
+        //if session exists
+        if(AccessToken.getCurrentAccessToken() != null) {
 
             listAlbum.setAdapter(null);
             listAlbum.deferNotifyDataSetChanged();
             //sending request to for albums
-            prepareRequest();
+            if(activityResumed && isInternetAvailable()) {
+                prepareRequest();
+                activityResumed = false;
+            }
         }
     }
 
@@ -215,5 +227,4 @@ public class AlbumsActivity extends AppCompatActivity {
         }
 
     }
-
 }

@@ -42,7 +42,8 @@ public class CnxActivity extends AppCompatActivity implements View.OnClickListen
     private Button goToAlbums;                          //the button to go show your albums
     private Intent intent;                              //Intent for activity changing
     private ImageView ppv;                              //The profile picture ImageView
-    private TextView userNameTv;
+    private TextView userNameTv;                        //TextView showing the name of the current user
+
 
 
     @Override
@@ -94,21 +95,22 @@ public class CnxActivity extends AppCompatActivity implements View.OnClickListen
                     ppv.setVisibility(View.GONE);
                     goToAlbums.setVisibility(View.GONE);
                     userNameTv.setVisibility(View.GONE);
+                }else{
+                    ppv.setVisibility(View.VISIBLE);
+                    goToAlbums.setVisibility(View.VISIBLE);
+                    userNameTv.setVisibility(View.VISIBLE);
                 }
             }
         };
 
 
-        //accessTokenTracker.startTracking();
+        accessTokenTracker.startTracking();
         //register the callback listener of the logging
-        registerCallBack();
+         registerCallBack();
 
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
+
 
 
     @Override
@@ -126,7 +128,7 @@ public class CnxActivity extends AppCompatActivity implements View.OnClickListen
         super.onResume();
 
         //if a session exists
-        if(AccessToken.getCurrentAccessToken() != null){
+        if(AccessToken.getCurrentAccessToken() != null) {
 
             //sending request to for albums
             setProfile();
@@ -159,7 +161,7 @@ public class CnxActivity extends AppCompatActivity implements View.OnClickListen
             //in case an error occurred while request
             @Override
             public void onError(FacebookException exception) {
-                Toast.makeText(getApplicationContext(),"Please! Connect to internet in order to continue",Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),"An error occurred",Toast.LENGTH_LONG).show();
             }
         });
 
@@ -224,21 +226,6 @@ public class CnxActivity extends AppCompatActivity implements View.OnClickListen
     }
 
 
-    /**
-     * Checks if the device is connected to internet
-     * @return boolean
-     */
-    public boolean isInternetAvailable() {
-        try {
-            InetAddress ipAddr = InetAddress.getByName("google.com");
-            return !ipAddr.equals("");
-
-        } catch (Exception e) {
-            return false;
-        }
-
-    }
-
 
     /**
      * Manages the click to go to the album's activity
@@ -248,7 +235,9 @@ public class CnxActivity extends AppCompatActivity implements View.OnClickListen
     @Override
     public void onClick(View view) {
 
-        if(AccessToken.getCurrentAccessToken() == null) return;
+        if(AccessToken.getCurrentAccessToken() == null ) {
+            return;
+        }
         System.out.println("passed");
         intent = new Intent(getApplicationContext(), AlbumsActivity.class);
 
@@ -256,4 +245,5 @@ public class CnxActivity extends AppCompatActivity implements View.OnClickListen
 
 
     }
+
 }

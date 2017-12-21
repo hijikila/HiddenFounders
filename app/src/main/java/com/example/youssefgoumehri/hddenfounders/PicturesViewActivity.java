@@ -14,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.AbsListView;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
@@ -38,6 +39,7 @@ public class PicturesViewActivity extends AppCompatActivity {
     private PictureAdapter pictureAdapter;              //the adapter of the UI
     private AlertDialog dialog;                         //an AlertDialog to show while long operations
     private AlertDialog.Builder builder;                //AlertDialog builder
+    private boolean activityResumed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +52,7 @@ public class PicturesViewActivity extends AppCompatActivity {
         setTitle("Pictures");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        activityResumed = false;
 
         //get the gridview
         photoList = findViewById(R.id.photoView);
@@ -64,9 +67,7 @@ public class PicturesViewActivity extends AppCompatActivity {
         dialog = builder.create();
         try {
             dialog.show();
-        }catch(Exception e){
-
-        }
+        }catch(Exception e){}
         //Retrieving the photos in the current album
         reterievePhotos();
 
@@ -74,6 +75,11 @@ public class PicturesViewActivity extends AppCompatActivity {
 
 
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        activityResumed = true;
+    }
 
 
     /**
@@ -84,8 +90,15 @@ public class PicturesViewActivity extends AppCompatActivity {
         super.onResume();
 
         //if a session exists
-        if(AccessToken.getCurrentAccessToken() != null && isInternetAvailable()){
+        if(AccessToken.getCurrentAccessToken() != null && activityResumed && isInternetAvailable()){
 
+            //Setting up and launching the alert dialog
+            builder = new AlertDialog.Builder(this);
+            builder.setMessage("Fetching for photos...").setCancelable(true);
+            dialog = builder.create();
+            try {
+                dialog.show();
+            }catch(Exception e){}
             photoList.setAdapter(null);
             photoList.deferNotifyDataSetChanged();
 
@@ -130,7 +143,7 @@ public class PicturesViewActivity extends AppCompatActivity {
             case R.id.UploadToFireBase:
                 if(pictureAdapter != null)
                     pictureAdapter.uploadAll();
-                    pictureAdapter.notifyDataSetChanged();
+                pictureAdapter.notifyDataSetChanged();
                 return true;
 
 
@@ -213,7 +226,6 @@ public class PicturesViewActivity extends AppCompatActivity {
     }
 
 
-
     /**
      * Checks if the device is connected to internet
      * @return boolean
@@ -228,5 +240,6 @@ public class PicturesViewActivity extends AppCompatActivity {
         }
 
     }
+
 
 }
