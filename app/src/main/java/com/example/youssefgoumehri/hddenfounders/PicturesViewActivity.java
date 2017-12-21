@@ -24,6 +24,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 
 public class PicturesViewActivity extends AppCompatActivity {
@@ -70,6 +71,32 @@ public class PicturesViewActivity extends AppCompatActivity {
         reterievePhotos();
 
     }
+
+
+
+
+
+    /**
+     * On Activity resume
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        //if a session exists
+        if(AccessToken.getCurrentAccessToken() != null && isInternetAvailable()){
+
+            photoList.setAdapter(null);
+            photoList.deferNotifyDataSetChanged();
+            //sending request to for albums
+            reterievePhotos();
+        }else{
+            onBackPressed();
+            finish();
+        }
+    }
+
+
 
 
     /**
@@ -143,6 +170,7 @@ public class PicturesViewActivity extends AppCompatActivity {
 
                 try {
                     RegisterPhotos(response);
+                    finish();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -186,6 +214,23 @@ public class PicturesViewActivity extends AppCompatActivity {
         photoList.deferNotifyDataSetChanged();
 
         dialog.dismiss();
+    }
+
+
+
+    /**
+     * Checks if the device is connected to internet
+     * @return boolean
+     */
+    public boolean isInternetAvailable() {
+        try {
+            InetAddress ipAddr = InetAddress.getByName("google.com");
+            return !ipAddr.equals("");
+
+        } catch (Exception e) {
+            return false;
+        }
+
     }
 
 }
