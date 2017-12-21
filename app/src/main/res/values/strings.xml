@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">HiddenFounders</string>
+    <!-- Facebook API Strings-->
+    <string name="facebook_app_id">165897844013267</string>
+    <string name="fb_login_protocol_scheme">fb165897844013267</string>
+    <string name="action_upload">Upload to Firebase</string>
+    <string name="Logged_in">Logged in As : </string>
+    <string name="Album_list"> Your albums </string>
+    <string name="Continue_to_albums"> Go to Albums </string>
+
+</resources>
