@@ -41,4 +41,4 @@ The app needs a couple of fonctionnalities to add to it :
 
 >Some code optimizations
 
-I will be pleased if you test it out and hit me by your constructive reviews. 
+I will be pleased if you test it out and hit me with your constructive reviews. 
