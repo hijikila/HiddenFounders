@@ -49,7 +49,7 @@ public class AlbumsActivity extends AppCompatActivity {
         listAlbum = findViewById(R.id.listView);
         albumsList = new ArrayList<>();
 
-//ggg
+        prepareRequest();
 
         //preparing the request to retrieve albums
             prepareRequest();
