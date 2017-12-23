@@ -23,7 +23,7 @@ These are technologies used in this app
 1. Clone the repository.
 ```git https://github.com/hijikila/HiddenFounder.git```
 
-2.Import the project to your android studio
+2. Import the project to your android studio
 
 3. You can either ask me to add you as a Tester of the app or you can change the project ``app/res/values/String.xml``  file and replace ``facebook_app_id`` and ``fb_login_protocol_scheme`` by the ones you get from your facebook developper account.
 
