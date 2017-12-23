@@ -49,8 +49,9 @@ public class AlbumsActivity extends AppCompatActivity {
         listAlbum = findViewById(R.id.listView);
         albumsList = new ArrayList<>();
 
-        prepareRequest();
+        prepareRet();
 
+        dghgdfgd
         //preparing the request to retrieve albums
             prepareRequest();
 
