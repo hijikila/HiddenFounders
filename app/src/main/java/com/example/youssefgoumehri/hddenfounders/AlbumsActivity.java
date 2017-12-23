@@ -1,6 +1,9 @@
 package com.example.youssefgoumehri.hddenfounders;
 
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -31,7 +34,6 @@ public class AlbumsActivity extends AppCompatActivity {
     private BitmapFromURL bitmapFromURL;                //gets a Bitmap of an URL String
     private android.app.AlertDialog dialog;             //an AlertDialog to show while long operations
     private android.app.AlertDialog.Builder builder;    //AlertDialog builder
-    private boolean activityResumed;
 
 
     @Override
@@ -49,9 +51,6 @@ public class AlbumsActivity extends AppCompatActivity {
 
 
 
-        activityResumed = false;
-
-
         //preparing the request to retrieve albums
             prepareRequest();
 
@@ -60,25 +59,6 @@ public class AlbumsActivity extends AppCompatActivity {
 
 
 
-    /**
-     * On Activity resume
-     */
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        //if session exists
-        if(AccessToken.getCurrentAccessToken() != null) {
-
-            listAlbum.setAdapter(null);
-            listAlbum.deferNotifyDataSetChanged();
-            //sending request to for albums
-            if(activityResumed && isInternetAvailable()) {
-                prepareRequest();
-
-            }else activityResumed = true;
-        }
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
@@ -138,6 +118,7 @@ public class AlbumsActivity extends AppCompatActivity {
 
 
         JSONObject jo = response.getJSONObject();
+        if(jo == null) return;
         JSONArray ja  = jo.getJSONArray("data");
 
         //Adding albums to the arraylist of albums
@@ -166,6 +147,17 @@ public class AlbumsActivity extends AppCompatActivity {
     private void prepareRequest(){
 
 
+        if(!isInternetAvailable()){
+            Toast.makeText(getApplicationContext(),"Check your internet connection please",Toast.LENGTH_LONG).show();
+            onBackPressed();
+        }
+
+        //Retrieving the current connection access Token
+        AccessToken at = AccessToken.getCurrentAccessToken();
+
+        if(at == null) {return;}
+
+
         builder = new android.app.AlertDialog.Builder(this);
         builder.setMessage("Fetching for albums...").setCancelable(true);
 
@@ -173,10 +165,8 @@ public class AlbumsActivity extends AppCompatActivity {
         try {
             dialog.show();
         }catch(Exception e){}
-        //Retrieving the current connection access Token
-        AccessToken at = AccessToken.getCurrentAccessToken();
 
-        if(at == null) {return;}
+
 
         //Select the information to get from server
         Bundle params = new Bundle();
@@ -213,14 +203,17 @@ public class AlbumsActivity extends AppCompatActivity {
      * Checks if the device is connected to internet
      * @return boolean
      */
-    public boolean isInternetAvailable() {
-        try {
-            InetAddress ipAddr = InetAddress.getByName("8.8.8.8");
-            return !ipAddr.equals("");
 
-        } catch (Exception e) {
-            return false;
+    private boolean isInternetAvailable() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfoMob = cm.getNetworkInfo(cm.TYPE_MOBILE);
+        NetworkInfo netInfoWifi = cm.getNetworkInfo(cm.TYPE_WIFI);
+        if (netInfoMob != null && netInfoMob.isConnectedOrConnecting()) {
+            return true;
         }
-
+        if (netInfoWifi != null && netInfoWifi.isConnectedOrConnecting()) {
+            return true;
+        }
+        return false;
     }
 }

@@ -1,10 +1,14 @@
 package com.example.youssefgoumehri.hddenfounders;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -43,8 +47,6 @@ public class CnxActivity extends AppCompatActivity implements View.OnClickListen
     private Intent intent;                              //Intent for activity changing
     private ImageView ppv;                              //The profile picture ImageView
     private TextView userNameTv;                        //TextView showing the name of the current user
-    private boolean activityResumed;
-
 
 
     @Override
@@ -69,8 +71,6 @@ public class CnxActivity extends AppCompatActivity implements View.OnClickListen
         //Instantiating
         albumsList = new ArrayList<>();
 
-        activityResumed = false;
-
         //Setting the login button
         LoginBtn = findViewById(R.id.login_button);
         LoginBtn.setReadPermissions("email");
@@ -81,6 +81,7 @@ public class CnxActivity extends AppCompatActivity implements View.OnClickListen
 
         //Setting an OnClick listener to the button
         goToAlbums.setOnClickListener(this);
+
 
 
 
@@ -107,8 +108,9 @@ public class CnxActivity extends AppCompatActivity implements View.OnClickListen
 
 
         accessTokenTracker.startTracking();
-        //register the callback listener of the logging
-         registerCallBack();
+
+            //register the callback listener of the logging
+            registerCallBack();
 
     }
 
@@ -117,7 +119,12 @@ public class CnxActivity extends AppCompatActivity implements View.OnClickListen
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
         fbCallBack.onActivityResult(requestCode, resultCode, data);
+        if(AccessToken.getCurrentAccessToken()== null) {
+            Toast.makeText(getApplicationContext(),"An error occurred while connecting! Check if you're allowed to test",Toast.LENGTH_LONG).show();
+            return;
+        }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -129,15 +136,16 @@ public class CnxActivity extends AppCompatActivity implements View.OnClickListen
     protected void onResume() {
         super.onResume();
 
+        ppv.setVisibility(View.GONE);
+        goToAlbums.setVisibility(View.GONE);
+        userNameTv.setVisibility(View.GONE);
+
         //if a session exists
         if(AccessToken.getCurrentAccessToken() != null) {
-            //if(activityResumed) {
-            if(isInternetAvailable()) {
+
                 //sending request to for albums
                 setProfile();
-                setProfilePicture(currProfile.getProfilePictureUri(350, 440));
-            }
-            //}else activityResumed = true;
+
         }
 
     }
@@ -150,6 +158,7 @@ public class CnxActivity extends AppCompatActivity implements View.OnClickListen
      *  - onSuccess : Sets Current profile
      */
     private void  registerCallBack(){
+
 
         LoginBtn.registerCallback(fbCallBack, new FacebookCallback<LoginResult>(){
             @Override
@@ -167,7 +176,7 @@ public class CnxActivity extends AppCompatActivity implements View.OnClickListen
             //in case an error occurred while request
             @Override
             public void onError(FacebookException exception) {
-                Toast.makeText(getApplicationContext(),"An error occurred",Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),"Check your internet connection please",Toast.LENGTH_LONG).show();
             }
         });
 
@@ -179,12 +188,16 @@ public class CnxActivity extends AppCompatActivity implements View.OnClickListen
      */
     private void setProfile(){
 
+            if(!isInternetAvailable()){
+                Toast.makeText(getApplicationContext(),"Check your internet connection please",Toast.LENGTH_LONG).show();
+                return;
+            }
 
         //getting the current connected profile information
         Profile.fetchProfileForCurrentAccessToken();
         currProfile = Profile.getCurrentProfile();
 
-        updateUI();
+        if(currProfile != null) updateUI();
 
     }
 
@@ -241,31 +254,31 @@ public class CnxActivity extends AppCompatActivity implements View.OnClickListen
     @Override
     public void onClick(View view) {
 
-         if(AccessToken.getCurrentAccessToken() != null && isInternetAvailable()) {
-             System.out.println("in22222");
-            intent = new Intent(getApplicationContext(), AlbumsActivity.class);
-
-            getApplicationContext().startActivity(intent);
-        }
+            if(AccessToken.getCurrentAccessToken() != null && isInternetAvailable()) {
+               intent = new Intent(getApplicationContext(), AlbumsActivity.class);
+               intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+               getApplicationContext().startActivity(intent);
+           }else Toast.makeText(getApplicationContext(),"Check your internet connection please",Toast.LENGTH_LONG).show();
 
     }
-
-
 
 
     /**
      * Checks if the device is connected to internet
      * @return boolean
      */
-    public boolean isInternetAvailable() {
-        try {
-            InetAddress ipAddr = InetAddress.getByName("8.8.8.8");
-            return !ipAddr.equals("");
-
-        } catch (Exception e) {
-            System.out.println("exception test internet");
-            return false;
+    private boolean isInternetAvailable() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo mobData = cm.getNetworkInfo(cm.TYPE_MOBILE);
+        NetworkInfo Wifi = cm.getNetworkInfo(cm.TYPE_WIFI);
+        if (mobData != null && mobData.isConnectedOrConnecting()){
+            return true;
         }
-
+        if (Wifi != null && Wifi.isConnectedOrConnecting()) {
+            return true;
+        }
+        return false;
     }
+
+
 }

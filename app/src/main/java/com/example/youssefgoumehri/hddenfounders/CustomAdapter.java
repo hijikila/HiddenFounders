@@ -96,6 +96,7 @@ public class CustomAdapter extends BaseAdapter {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, PicturesViewActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra("album",  albums.get(i));
                 context.startActivity(intent);
 

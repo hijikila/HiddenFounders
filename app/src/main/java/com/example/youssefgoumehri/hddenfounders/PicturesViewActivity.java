@@ -2,8 +2,11 @@ package com.example.youssefgoumehri.hddenfounders;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -72,30 +75,6 @@ public class PicturesViewActivity extends AppCompatActivity {
 
 
     /**
-     * On Activity resume
-     */
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        //if a session exists
-        if(AccessToken.getCurrentAccessToken() != null){
-
-
-            photoList.setAdapter(null);
-            photoList.deferNotifyDataSetChanged();
-
-        if(activityResumed && isInternetAvailable())
-            reterievePhotos();
-        }else{
-            activityResumed = true;
-        }
-    }
-
-
-
-
-    /**
      * Add some actionBar entries
      * @param menu
      * @return
@@ -126,7 +105,7 @@ public class PicturesViewActivity extends AppCompatActivity {
                 return true;
 
             case R.id.UploadToFireBase:
-                if(pictureAdapter != null)
+                if(pictureAdapter != null && isInternetAvailable())
                     pictureAdapter.uploadAll();
                 pictureAdapter.notifyDataSetChanged();
                 return true;
@@ -150,9 +129,13 @@ public class PicturesViewActivity extends AppCompatActivity {
     private void reterievePhotos(){
 
 
+        if(!isInternetAvailable()){
+            Toast.makeText(getApplicationContext(),"Check your internet connection please",Toast.LENGTH_LONG).show();
+            onBackPressed();
+        }
+
         Bundle params = new Bundle();
         params.putString("fields", "id, source");
-        params.putString("url", "{image-url}");
 
 
         //Setting up and launching the alert dialog
@@ -177,7 +160,6 @@ public class PicturesViewActivity extends AppCompatActivity {
                 try {
                     RegisterPhotos(response);
                 } catch (JSONException e) {
-                    e.printStackTrace();
                 }
 
 
@@ -199,10 +181,18 @@ public class PicturesViewActivity extends AppCompatActivity {
      * @throws JSONException
      */
     private void RegisterPhotos(GraphResponse response) throws JSONException {
+
+
+        if(response.getJSONObject() == null) return;
+
+
         JSONArray photodata = response.getJSONObject().getJSONArray("data");
         JSONObject o;
+
+
         ArrayList<String> picturesId = new ArrayList<>();
         ArrayList<Photos> picturesUrl = new ArrayList<>();
+
 
         for(int iterator = 0; iterator < photodata.length(); iterator++){
             o = (JSONObject) photodata.get(iterator);
@@ -212,6 +202,7 @@ public class PicturesViewActivity extends AppCompatActivity {
 
 
         }
+
 
         currAlbum.setPicturesUrl(picturesUrl);
         pictureAdapter = new PictureAdapter(this.getApplicationContext(), currAlbum, PicturesViewActivity.this);
@@ -226,15 +217,18 @@ public class PicturesViewActivity extends AppCompatActivity {
      * Checks if the device is connected to internet
      * @return boolean
      */
-    public boolean isInternetAvailable() {
-        try {
-            InetAddress ipAddr = InetAddress.getByName("8.8.8.8");
-            return !ipAddr.equals("");
 
-        } catch (Exception e) {
-            return false;
+    private boolean isInternetAvailable() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo mobiData = cm.getNetworkInfo(cm.TYPE_MOBILE);
+        NetworkInfo Wifi = cm.getNetworkInfo(cm.TYPE_WIFI);
+        if (mobiData != null && mobiData.isConnectedOrConnecting()) {
+            return true;
         }
-
+        if (Wifi != null && Wifi.isConnectedOrConnecting()) {
+            return true;
+        }
+        return false;
     }
 
 
